@@ -1,76 +1,138 @@
 <?php
 namespace Tenon\Application;
 
-use Tenon\Server\SwooleMonitor;
-use Tenon\Contracts\Server\ServerContract;
+use Tenon\Service\ComponentFactory;
 use Tenon\Support\Output;
 
 
-class App
+/**
+ * App容器
+ * Class App
+ * @package Tenon\Application
+ */
+final class App extends Container
 {
-    private static $_app = null;
+    /**
+     * 容器对象
+     * @var \Tenon\Application\App;
+     */
+    private static $_app;
 
-    private $_components;
+    /**
+     * App Name
+     * @var string
+     */
+    private $appName;
 
-    private $_server_monitor;
+    /**
+     * 配置
+     * @var array
+     */
+    private $config = [];
 
-    private $_config;
-
+    /**
+     * 是否启动标识
+     * @var bool
+     */
     private $booted = false;
 
-    private function config()
+    /**
+     * 是否开启daemon模式标识
+     * @var bool
+     */
+    private $daemon = false;
+
+    /**
+     * 初始化基础组件
+     * @var array
+     */
+    private $components = [
+        'Configure' => \Tenon\Service\Configure::class,
+    ];
+
+    /**
+     * App容器对象构造入口，每个Worker会使用全局单例的App对象
+     * @param array $local_config 容器初始化配置
+     * @param bool $refresh 强制刷新App
+     * @return App
+     */
+    public static function getInstance(array $local_config, bool $refresh = false): App
     {
-        return $this->_config;
-    }
-
-    private function __construct(array $local_config)
-    {
-        $this->_config = $local_config;
-
-        $this->init();
-    }
-
-    protected function init()
-    {
-        $this->initConfig();
-
-        $this->initServer();
-
-        $this->booted = true;
-    }
-
-    protected function initConfig()
-    {
-
-    }
-
-    protected function initServer()
-    {
-        //Todo: 这里改下，应该是直接去起swoole monitor，然后由monitor来起server，这样比较合理
-        $this->_server_monitor = (new SwooleMonitor($this->config()))->init($this);
-    }
-
-    public static function getInstance(array $local_config = [])
-    {
-        if (is_null(self::$_app) && !empty($local_config)) {
+        if (is_null(self::$_app) || $refresh) {
             self::$_app = new self($local_config);
         }
         return self::$_app;
     }
 
-    public static function refreshApp()
-    {
-
-    }
-
     public function run()
     {
-        if ($this->_server_monitor && $this->_server_monitor instanceof SwooleMonitor) {
-            $this->_server_monitor->run();
-        } else {
-            Output::error(['App.run' => 'fail with error server monitor']);
-            die();
+
+    }
+
+    /**
+     * 构造函数
+     * App constructor.
+     * @param array $local_config
+     */
+    private function __construct(array $local_config)
+    {
+        //初始化配置
+        $this->initConfig($local_config);
+
+        //初始化App
+        $this->initApp();
+
+        //标记为已启动
+        $this->booted = true;
+    }
+
+    /**
+     * 解析配置，初始化配置
+     * @param array $local_config
+     */
+    protected function initConfig(array $local_config)
+    {
+        //判断基础配置是否齐全
+        if (!array_key_exists('app_name', $local_config) || !array_key_exists('server', $local_config)) {
+            Output::stderr(["booted" => $this->booted, "msg" => "local_config miss app_name or server config."]);
+            exit;
+        }
+
+        $this->config = $local_config;
+    }
+
+    /**
+     * 初始化App
+     */
+    protected function initApp()
+    {
+        //设置app name
+        $this->setAppName($this->config['app_name']);
+
+        //在容器中初始化App本身
+        $this->instance('App', $this);
+
+        //注册组件
+        $this->registerComponents();
+    }
+
+    protected function setAppName(string $name)
+    {
+        $this->appName = $name;
+    }
+
+    /**
+     * 注册基础组件
+     */
+    protected function registerComponents()
+    {
+        foreach ($this->components as $facade => $component) {
+            $this->bind($facade, (new ComponentFactory())->make($component));
         }
     }
+
+    private function __destruct() {}
+
+    private function __clone() {}
 
 }

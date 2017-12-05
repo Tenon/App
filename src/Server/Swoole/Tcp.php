@@ -1,6 +1,5 @@
 <?php
 namespace Tenon\Server;
-use Tenon\Support\Output;
 use Tenon\Server\Worker;
 
 

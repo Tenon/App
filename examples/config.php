@@ -6,10 +6,10 @@ return [
     'app_name' => 'tenon_service',
     // server config
     'server' => [
-        'server_type' => 'tcp',
-        'swoole_config' => [
-            'reactor_num' => 4,
-            'work_num' => 16,
+        'server_type' => 'swoole',
+        'server_config' => [
+            'reactor_num' => 2,
+            'work_num' => 4,
             'max_request' => 50000,
             'task_worker_num' => 2,
         ],

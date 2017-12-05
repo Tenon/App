@@ -35,16 +35,16 @@ abstract class SwooleServerAbstract implements ServerContract
         $this->pid = $pid;
         $writeFlag = file_put_contents($this->pidFile, $this->pid);
         if (!$writeFlag) {
-            Output::error(['Server.flushPid' => 'write pid file fail', 'pidFile' => $this->pidFile]);
+            Output::stderr(['Server.flushPid' => 'write pid file fail', 'pidFile' => $this->pidFile]);
         } else {
-            Output::debug(['Server.flushPid' => 'write pid file success', 'pidFile' => $this->pidFile]);
+            Output::stdout(['Server.flushPid' => 'write pid file success', 'pidFile' => $this->pidFile]);
         }
     }
 
     public function beforeRun()
     {
         if ($this->beforeCb && $this->beforeCb instanceof Closure) {
-            Output::debug(['Server.beforeRun' => 'do beforeCb']);
+            Output::stdout(['Server.beforeRun' => 'do beforeCb']);
             $this->beforeCb();
         }
     }

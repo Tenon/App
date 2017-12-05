@@ -7,6 +7,9 @@ use Tenon\Application\App;
 
 class SwooleMonitor
 {
+    /**
+     * @var \Tenon\Contracts\Server\ServerContract
+     */
     private $_server;
 
     private $settings;
@@ -16,6 +19,13 @@ class SwooleMonitor
     public function __construct(array $server_settings)
     {
         $this->settings = $server_settings;
+
+        $this->init();
+    }
+
+    public function setApp(App $app)
+    {
+        $this->app = $app;
     }
 
     /**
@@ -40,21 +50,20 @@ class SwooleMonitor
         return true;
     }
 
-    public function init(App $app)
+    protected function init()
     {
         // check settings
         $checkedErrors = $this->checkSettings();
         if ($checkedErrors) {
-            Output::error($checkedErrors);
+            Output::stderr($checkedErrors);
             die();
         }
         // check swoole extension exists
         if (!$this->checkVersion()) {
-            Output::error(['Server.beforeRun' => 'swoole extension not exist!']);
+            Output::stderr(['Server.beforeRun' => 'swoole extension not exist!']);
             die();
         }
-        // init app
-        $this->app = $app;
+
         // init server
         $this->_server = (new ServerFactory())->make($this->settings)->init();
 

@@ -3,17 +3,17 @@ namespace Tenon\Support;
 
 class Output
 {
-    public static function stdout(string $out)
+    public static function stdout(array $out)
     {
-        fprintf(STDOUT, $out, "\n");
+        fprintf(STDOUT, self::format($out), "\n");
     }
 
-    public static function stderr(string $err)
+    public static function stderr(array $err)
     {
-        fprintf(STDERR, $err, "\n");
+        fprintf(STDERR, self::format($err), "\n");
     }
 
-    public static function format(array &$output)
+    protected static function format(array &$output)
     {
         $tmp = [];
         foreach ($output as $key => $value)
@@ -21,15 +21,5 @@ class Output
             $tmp[] = "{$key} : {$value}";
         }
         return implode(" ; ", $tmp);
-    }
-
-    public static function error(array $output)
-    {
-        self::stderr(self::format($output));
-    }
-
-    public static function debug(array $output)
-    {
-        self::stdout(self::format($output));
     }
 }
