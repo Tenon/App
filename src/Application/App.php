@@ -32,10 +32,10 @@ final class App extends Container
     private $appName;
 
     /**
-     * 配置
-     * @var array
+     * 配置文件目录
+     * @var string
      */
-    private $config = [];
+    private $configPath;
 
     /**
      * 是否启动标识
@@ -60,14 +60,19 @@ final class App extends Container
 
     /**
      * App容器对象构造入口，每个Worker会使用全局单例的App对象
-     * @param array $config 容器初始化配置
      * @param bool $refresh 强制刷新App
      * @return ContainerContract
      */
-    public static function getInstance(array $config, $refresh = false): ContainerContract
+    public static function getInstance($refresh = false): ContainerContract
     {
+        //before init check
+        if (!defined('MAIN_INIT')) {
+            Output::stderr(['msg' => 'Main not init yet, App init failed.']);
+            exit;
+        }
+        //init app
         if (is_null(self::$_app) || $refresh) {
-            self::$_app = new self($config);
+            self::$_app = new self();
         }
         return self::$_app;
     }
@@ -82,23 +87,13 @@ final class App extends Container
     }
 
     /**
-     * 返回App容器中的配置
-     * @return array
-     */
-    public function config(): array
-    {
-        return $this->config;
-    }
-
-    /**
      * 构造函数
      * App constructor.
-     * @param array $local_config
      */
-    private function __construct(array $local_config)
+    private function __construct()
     {
         //初始化配置
-        $this->initConfig($local_config);
+        $this->initConfigure();
 
         //初始化App
         $this->initApp();
@@ -108,13 +103,14 @@ final class App extends Container
     }
 
     /**
+     * 初始化配置组件
      * 解析配置，初始化配置
-     * 更改配置初始化的方式，采用.env方式
-     * @param array $local_config
+     * 从env中读到基础配置后，进行配置文件查询、解析
      */
-    protected function initConfig(array $local_config)
+    protected function initConfigure()
     {
-        $this->config = $local_config;
+        //配置文件目录定位
+        $this->configPath = getenv('CONFIG_PATH') === false ? APP_PATH . '/config' : getenv('CONFIG_PATH');
     }
 
     /**
@@ -123,7 +119,7 @@ final class App extends Container
     protected function initApp()
     {
         //设置app name
-        $this->setAppName(APP_NAME);
+        $this->setAppName();
 
         //在容器中初始化App本身
         $this->instance('App', $this);
@@ -132,9 +128,9 @@ final class App extends Container
         $this->registerComponents();
     }
 
-    protected function setAppName(string $name)
+    protected function setAppName()
     {
-        $this->appName = $name;
+
     }
 
     /**

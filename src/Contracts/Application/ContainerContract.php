@@ -6,10 +6,10 @@ interface ContainerContract
 {
     public function make($abstract, array $parameters = [], $isSingleton = true);
 
-    public static function getInstance(array $config, $refresh = false): self;
+    public static function getInstance($refresh = false): self;
 
     public function version(): string;
 
-    public function config(): array;
+//    public function config(): array;
 
 }

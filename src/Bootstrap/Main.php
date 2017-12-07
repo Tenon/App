@@ -3,10 +3,12 @@ namespace Tenon\Bootstrap;
 
 use Tenon\Application\App;
 use Tenon\Support\Output;
+use Dotenv\Dotenv;
 
 
 /**
  * 服务启动入口类，分为进程型和命令行型
+ * Booter层负责解析env配置，设置全局变量等动作
  * Class Main
  * @package Tenon\Bootstrap
  */
@@ -14,12 +16,11 @@ final class Main
 {
     /**
      * server入口
-     * @param array $aSettings
      */
-    public static function server(array $aSettings)
+    public static function server($envPath)
     {
-        self::init($aSettings);
-        $app = App::getInstance($aSettings);
+        self::init($envPath);
+        $app = App::getInstance();
         (new Server($app))->run();
     }
 
@@ -27,10 +28,10 @@ final class Main
      * console入口
      * @param array $aSettings
      */
-    public static function cli(array $aSettings)
+    public static function cli($envPath)
     {
-        self::init($aSettings);
-        $app = App::getInstance($aSettings);
+        self::init($envPath);
+        $app = App::getInstance();
         (new Console($app))->run();
     }
 
@@ -39,18 +40,23 @@ final class Main
      * @param array $aSettings
      * @return void
      */
-    protected static function init(array $aSettings)
+    protected static function init($envPath)
     {
-        //判断最基础配置是否齐全
-        if (!array_key_exists('app_name', $aSettings) || !array_key_exists('base_path', $aSettings)) {
-            Output::stderr(["msg" => "config miss app_name or server config."]);
+        //load env
+        (new Dotenv($envPath))->load();
+
+        //判断env变量
+        if (getenv('APP_SECRET') === false) {
+            Output::stdout(['msg' => 'warning: APP_SECRET not defined.']);
+        }
+        if (getenv('APP_PATH') === false) {
+            Output::stderr(['msg' => 'error: APP_PATH not defined.']);
             exit;
         }
 
         //设置全局变量
-        define('APP_NAME', $aSettings['app_name']);
-        define('BASE_PATH', $aSettings['base_path']);
-        define('FRAMEWORK_PATH', dirname(__DIR__));
-
+        define('MAIN_INIT', true);
+        define('APP_PATH', getenv('APP_PATH'));
+//        define('FRAMEWORK_PATH', dirname(__DIR__));
     }
 }
