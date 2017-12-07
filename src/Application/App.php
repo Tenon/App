@@ -93,7 +93,7 @@ final class App extends Container
     private function __construct()
     {
         //初始化配置
-        $this->initConfigure();
+        $this->initConfig();
 
         //初始化App
         $this->initApp();
@@ -107,10 +107,16 @@ final class App extends Container
      * 解析配置，初始化配置
      * 从env中读到基础配置后，进行配置文件查询、解析
      */
-    protected function initConfigure()
+    protected function initConfig()
     {
         //配置文件目录定位
         $this->configPath = getenv('CONFIG_PATH') === false ? APP_PATH . '/config' : getenv('CONFIG_PATH');
+
+        //配置文件类型
+        $configType = getenv('CONFIG_TYPE') === false ? 'php' : getenv('CONFIG_TYPE');
+
+        //init configure
+        
     }
 
     /**
