@@ -5,12 +5,12 @@ class Output
 {
     public static function stdout(array $out)
     {
-        fprintf(STDOUT, self::format($out), "\n");
+        fprintf(STDOUT, self::format($out), PHP_EOL);
     }
 
     public static function stderr(array $err)
     {
-        fprintf(STDERR, self::format($err), "\n");
+        fprintf(STDERR, self::format($err), PHP_EOL);
     }
 
     protected static function format(array &$output)

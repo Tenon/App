@@ -43,14 +43,19 @@ final class Main
     protected static function init($envPath)
     {
         //load env
-        (new Dotenv($envPath))->load();
+        try {
+            (new Dotenv($envPath))->load();
+        } catch (\Exception $e) {
+            Output::stderr(['error' => $e->getMessage()]);
+            exit();
+        }
 
         //判断env变量
         if (getenv('APP_SECRET') === false) {
-            Output::stdout(['msg' => 'warning: APP_SECRET not defined.']);
+            Output::stdout(['warning' => 'APP_SECRET not defined.']);
         }
         if (getenv('APP_PATH') === false) {
-            Output::stderr(['msg' => 'error: APP_PATH not defined.']);
+            Output::stderr(['error' => 'APP_PATH not defined.']);
             exit;
         }
 

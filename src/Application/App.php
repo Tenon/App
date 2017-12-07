@@ -4,6 +4,7 @@ namespace Tenon\Application;
 use Tenon\Contracts\Application\ContainerContract;
 use Tenon\Service\ComponentFactory;
 use Tenon\Support\Output;
+use Tenon\Service\Configure\ConfigureFactory;
 
 
 /**
@@ -32,12 +33,6 @@ final class App extends Container
     private $appName;
 
     /**
-     * 配置文件目录
-     * @var string
-     */
-    private $configPath;
-
-    /**
      * 是否启动标识
      * @var bool
      */
@@ -48,7 +43,6 @@ final class App extends Container
      * @var array
      */
     private $components = [
-        'Configure' => \Tenon\Service\Configure::class,  //配置
         //route
         //pdo
         //event
@@ -67,7 +61,7 @@ final class App extends Container
     {
         //before init check
         if (!defined('MAIN_INIT')) {
-            Output::stderr(['msg' => 'Main not init yet, App init failed.']);
+            Output::stderr(['error' => 'Main not init yet, App init failed.']);
             exit;
         }
         //init app
@@ -110,13 +104,16 @@ final class App extends Container
     protected function initConfig()
     {
         //配置文件目录定位
-        $this->configPath = getenv('CONFIG_PATH') === false ? APP_PATH . '/config' : getenv('CONFIG_PATH');
+        $configPath = getenv('CONFIG_PATH') === false ? APP_PATH . '/config' : getenv('CONFIG_PATH');
 
         //配置文件类型
         $configType = getenv('CONFIG_TYPE') === false ? 'php' : getenv('CONFIG_TYPE');
 
         //init configure
-        
+        $configure = ConfigureFactory::make($configPath, $configType);
+
+        //include into container
+        $this->instance('Configure', $configure);
     }
 
     /**
@@ -127,16 +124,17 @@ final class App extends Container
         //设置app name
         $this->setAppName();
 
-        //在容器中初始化App本身
-        $this->instance('App', $this);
-
         //注册组件
         $this->registerComponents();
     }
 
     protected function setAppName()
     {
-
+        $this->appName = $this->make('Configure')->get('app_name');
+        if (!$this->appName) {
+            Output::stderr(['error' => 'app_name config not defined.']);
+            exit();
+        }
     }
 
     /**

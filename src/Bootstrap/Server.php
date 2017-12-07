@@ -33,26 +33,34 @@ final class Server implements BootstrapContract
 
     public function run()
     {
-        $configure = $this->app->make('Configure');
-        var_dump($configure);
-        exit;
+        //check server config
+        $this->checkServerConfig();
+
+        //init server manager by factory
+
+        //server manager run, raise server processes
+
     }
 
-    public function isDaemon()
+    protected function isDaemon()
     {
-
         return $this->daemon;
     }
 
     /**
      * 初始化Server Manager
      */
-    protected function initServerManager()
+    private function initServerManager()
     {
 
     }
 
-    protected function checkRuntimePath()
+    private function checkServerConfig()
+    {
+        $this->checkRuntimePath();
+    }
+
+    private function checkRuntimePath()
     {
 
     }
