@@ -1,12 +1,13 @@
 <?php
 
-// local config
-
 return [
-    'app_name' => 'tenon_service',
+    'app_name'  => 'tenon_service',  //应用名
+    'base_path' => dirname(__DIR__), //基础路径,
     // server config
     'server' => [
+        'is_daemon' => false,  //is_daemon config or "-d" command params
         'server_type' => 'swoole',
+        'runtime_path'  => '/data/app/runtime/tenon_service/',  //server运行时目录
         'server_config' => [
             'reactor_num' => 2,
             'work_num' => 4,
@@ -14,22 +15,4 @@ return [
             'task_worker_num' => 2,
         ],
     ],
-    // zk
-    'zk' => [
-        //Todo: zk config here.
-    ],
-    // rpc service
-    'rpc' => [
-        'service_name' => [
-            //Todo: rpc depend service config here
-        ]
-    ],
-    // db pool
-    'db' => [
-        'pdo' => [
-            //Todo:
-        ],
-    ],
-    // redis
-    // other...
 ];

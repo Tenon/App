@@ -2,6 +2,7 @@
 namespace Tenon\Bootstrap;
 
 use Tenon\Application\App;
+use Tenon\Support\Output;
 
 
 /**
@@ -17,7 +18,8 @@ final class Main
      */
     public static function server(array $aSettings)
     {
-        $app = App::getInstance(self::init($aSettings));
+        self::init($aSettings);
+        $app = App::getInstance($aSettings);
         (new Server($app))->run();
     }
 
@@ -27,17 +29,28 @@ final class Main
      */
     public static function cli(array $aSettings)
     {
-        $app = App::getInstance(self::init($aSettings));
+        self::init($aSettings);
+        $app = App::getInstance($aSettings);
         (new Console($app))->run();
     }
 
     /**
      * 参数初始化
      * @param array $aSettings
-     * @return mixed
+     * @return void
      */
-    protected static function init(array $aSettings): array
+    protected static function init(array $aSettings)
     {
+        //判断最基础配置是否齐全
+        if (!array_key_exists('app_name', $aSettings) || !array_key_exists('base_path', $aSettings)) {
+            Output::stderr(["msg" => "config miss app_name or server config."]);
+            exit;
+        }
+
+        //设置全局变量
+        define('APP_NAME', $aSettings['app_name']);
+        define('BASE_PATH', $aSettings['base_path']);
+        define('FRAMEWORK_PATH', dirname(__DIR__));
 
     }
 }

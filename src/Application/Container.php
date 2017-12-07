@@ -10,7 +10,7 @@ use Closure;
  * Class Container
  * @package Tenon\Application
  */
-class Container implements ContainerContract
+abstract class Container implements ContainerContract
 {
     /**
      * @var array

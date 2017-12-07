@@ -1,11 +1,15 @@
 <?php
 namespace Tenon\Service;
 
-use Tenon\Contracts\Component\ComponentContract;
-use Tenon\Contracts\Application\ContainerContract;
 use Closure;
+use Tenon\Support\Output;
 
 
+/**
+ * 基础组件生产
+ * Class ComponentFactory
+ * @package Tenon\Service
+ */
 final class ComponentFactory
 {
     public function __construct()
@@ -13,10 +17,10 @@ final class ComponentFactory
 
     }
 
-    public function make(ComponentContract $component): Closure
+    public function make(string $component): Closure
     {
-        return function(ContainerContract $app) use ($component) {
-            return new $component($app);
+        return function() use ($component) {
+            return new $component();
         };
     }
 }
