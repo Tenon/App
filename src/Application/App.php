@@ -33,6 +33,11 @@ final class App extends Container
     private $appName;
 
     /**
+     * @var string
+     */
+    private $basePath;
+
+    /**
      * 是否启动标识
      * @var bool
      */
@@ -110,7 +115,7 @@ final class App extends Container
         $configType = getenv('CONFIG_TYPE') === false ? 'php' : getenv('CONFIG_TYPE');
 
         //init configure
-        $configure = ConfigureFactory::make($configPath, $configType);
+        $configure = ConfigureFactory::make($configPath, $configType)->init();
 
         //include into container
         $this->instance('Configure', $configure);

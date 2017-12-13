@@ -4,8 +4,8 @@ namespace Tenon\Service\Configure;
 
 final class JsonConfigure extends BaseConfigure
 {
-    public function loadConfigFiles()
+    protected function loadConfigFiles($filePath): array
     {
-        
+
     }
 }

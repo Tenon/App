@@ -10,6 +10,4 @@ interface ContainerContract
 
     public function version(): string;
 
-//    public function config(): array;
-
 }

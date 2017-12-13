@@ -1,5 +1,6 @@
 <?php
 namespace Tenon\Service\Configure;
+use Tenon\Support\Output;
 
 
 /**
@@ -7,13 +8,14 @@ namespace Tenon\Service\Configure;
  */
 final class PhpConfigure extends BaseConfigure
 {
-    public function loadConfigFiles()
+    protected function loadConfigFiles($filePath): array
     {
-
-    }
-
-    public function get($key)
-    {
-
+        try {
+            $config = require $filePath;
+        } catch (\Exception $e) {
+            Output::stderr(['warning' => $e->getMessage()]);
+            $config = [];
+        }
+        return $config;
     }
 }

@@ -7,5 +7,7 @@ namespace Tenon\Contracts\Service;
  */
 interface ConfigureContract
 {
-    public function get($key);
+    public function init(): self;
+
+    public function get($key, $default = null);
 }

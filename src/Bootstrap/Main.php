@@ -16,6 +16,7 @@ final class Main
 {
     /**
      * server入口
+     * @param string $envPath
      */
     public static function server($envPath)
     {
@@ -26,7 +27,7 @@ final class Main
 
     /**
      * console入口
-     * @param array $aSettings
+     * @param string $envPath
      */
     public static function cli($envPath)
     {
@@ -37,7 +38,7 @@ final class Main
 
     /**
      * 参数初始化
-     * @param array $aSettings
+     * @param string $envPath
      * @return void
      */
     protected static function init($envPath)
@@ -56,12 +57,11 @@ final class Main
         }
         if (getenv('APP_PATH') === false) {
             Output::stderr(['error' => 'APP_PATH not defined.']);
-            exit;
+            exit();
         }
 
         //设置全局变量
         define('MAIN_INIT', true);
         define('APP_PATH', getenv('APP_PATH'));
-//        define('FRAMEWORK_PATH', dirname(__DIR__));
     }
 }

@@ -4,6 +4,7 @@ namespace Tenon\Bootstrap;
 use Tenon\Contracts\Bootstrap\BootstrapContract;
 use Tenon\Contracts\Application\ContainerContract;
 use Tenon\Contracts\Server\ServerContract;
+use Tenon\Support\Output;
 
 
 final class Server implements BootstrapContract
@@ -33,6 +34,7 @@ final class Server implements BootstrapContract
 
     public function run()
     {
+        Output::stdout(['debug' => 'Server.run begin.']);
         //check server config
         $this->checkServerConfig();
 
