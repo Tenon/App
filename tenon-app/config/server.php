@@ -8,7 +8,6 @@ return [
     'port' => '20000',
     'is_daemon' => false,  //is_daemon config or "-d" command params
     'server_type' => 'swoole',
-    'runtime_path'  => '/data/app/runtime/tenon_service/',  //server运行时目录
     'server_config' => [
         'reactor_num' => 2,
         'work_num' => 4,

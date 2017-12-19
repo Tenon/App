@@ -4,7 +4,7 @@ namespace Tenon\Service;
 use Tenon\Contracts\Component\ComponentContract;
 
 
-abstract class BaseComponent implements ComponentContract
+abstract class Component implements ComponentContract
 {
 
 }

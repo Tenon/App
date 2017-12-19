@@ -3,11 +3,32 @@
 use Tenon\Application\App;
 
 /**
- * 需要改变App的初始化方式，确保能够真正全局唯一单例
+ * App单例
  */
 if (!function_exists('app')) {
     function app()
     {
         return App::getInstance();
+    }
+}
+
+/**
+ * 获取env
+ */
+if (!function_exists('env')) {
+    function env($key, $default = null)
+    {
+        $value = getenv($key);
+        if (!$value) {
+            return $default;
+        }
+        return $value;
+    }
+}
+
+if (!function_exists('runtime_path')) {
+    function runtime_path($path = '')
+    {
+
     }
 }

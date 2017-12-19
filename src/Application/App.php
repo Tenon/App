@@ -118,7 +118,7 @@ final class App extends Container
         $configure = ConfigureFactory::make($configPath, $configType)->init();
 
         //include into container
-        $this->instance('Configure', $configure);
+        $this->instance('Config', $configure);
     }
 
     /**
@@ -135,7 +135,7 @@ final class App extends Container
 
     protected function setAppName()
     {
-        $this->appName = $this->make('Configure')->get('app_name');
+        $this->appName = $this->make('Config')->get('app_name');
         if (!$this->appName) {
             Output::stderr(['error' => 'app_name config not defined.']);
             exit();

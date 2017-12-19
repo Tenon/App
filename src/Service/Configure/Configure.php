@@ -1,7 +1,7 @@
 <?php
 namespace Tenon\Service\Configure;
 
-use Tenon\Service\BaseComponent;
+use Tenon\Service\Component;
 use Tenon\Contracts\Service\ConfigureContract;
 use Tenon\Support\Output;
 use Tenon\Support\Arr;
@@ -10,7 +10,7 @@ use Tenon\Support\Arr;
 /**
  * Base Configure
  */
-abstract class BaseConfigure extends BaseComponent implements ConfigureContract
+abstract class Configure extends Component implements ConfigureContract
 {
     /**
      * config file dir path
@@ -40,7 +40,11 @@ abstract class BaseConfigure extends BaseComponent implements ConfigureContract
         $this->configType = $configType;
     }
 
-    public function init(): ConfigureContract
+    /**
+     * 获取配置目录下所有配置文件内容
+     * @Todo: 递归读取目录
+     */
+    protected function loadConfigDir()
     {
         if (($dir = opendir($this->configPath)) === false)
         {
@@ -65,8 +69,6 @@ abstract class BaseConfigure extends BaseComponent implements ConfigureContract
             }
             $this->config = array_merge($this->config, $config);
         }
-
-        return $this;
     }
 
     public function get($key, $default = null)
