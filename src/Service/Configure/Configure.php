@@ -8,7 +8,8 @@ use Tenon\Support\Arr;
 
 
 /**
- * Base Configure
+ * Class Configure
+ * @package Tenon\Service\Configure
  */
 abstract class Configure extends Component implements ConfigureContract
 {

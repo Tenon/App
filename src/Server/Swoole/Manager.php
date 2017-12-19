@@ -1,11 +1,12 @@
 <?php
-namespace Tenon\Server;
+namespace Tenon\Server\Swoole;
 
 use Tenon\Support\Output;
 use Tenon\Application\App;
+use Tenon\Bootstrap\Server;
 
 
-class SwooleMonitor
+class Manager
 {
     /**
      * @var \Tenon\Contracts\Server\ServerContract
@@ -16,10 +17,8 @@ class SwooleMonitor
 
     private $app;
 
-    public function __construct(array $server_settings)
+    public function __construct(Server $server)
     {
-        $this->settings = $server_settings;
-
         $this->init();
     }
 
@@ -65,7 +64,7 @@ class SwooleMonitor
         }
 
         // init server
-        $this->_server = (new ServerFactory())->make($this->settings)->init();
+//        $this->_server = (new ServerFactory())->make($this->settings)->init();
 
         return $this;
     }

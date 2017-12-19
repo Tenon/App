@@ -35,6 +35,11 @@ final class App extends Container
     /**
      * @var string
      */
+    private $defaultConfigType = 'php';
+
+    /**
+     * @var string
+     */
     private $basePath;
 
     /**
@@ -109,10 +114,10 @@ final class App extends Container
     protected function initConfig()
     {
         //配置文件目录定位
-        $configPath = getenv('CONFIG_PATH') === false ? APP_PATH . '/config' : getenv('CONFIG_PATH');
+        $configPath = env('CONFIG_PATH', APP_PATH . '/config');
 
         //配置文件类型
-        $configType = getenv('CONFIG_TYPE') === false ? 'php' : getenv('CONFIG_TYPE');
+        $configType = env('CONFIG_TYPE', $this->defaultConfigType);
 
         //init configure
         $configure = ConfigureFactory::make($configPath, $configType)->init();
@@ -140,6 +145,7 @@ final class App extends Container
             Output::stderr(['error' => 'app_name config not defined.']);
             exit();
         }
+        define('APP_NAME', $this->appName);
     }
 
     /**

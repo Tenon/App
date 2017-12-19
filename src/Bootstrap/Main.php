@@ -15,6 +15,11 @@ use Dotenv\Dotenv;
 final class Main
 {
     /**
+     * @var string
+     */
+    private static $appPath;
+
+    /**
      * server入口
      * @param string $appPath
      */
@@ -27,7 +32,7 @@ final class Main
 
     /**
      * console入口
-     * @param string $envPath
+     * @param string $appPath
      */
     public static function cli($appPath)
     {
@@ -43,14 +48,31 @@ final class Main
      */
     protected static function init($appPath)
     {
+        Output::stdout(['debug' => 'Main.init begin.']);
+        self::$appPath = $appPath;
+
+        //check app path
+        self::checkAppPath();
+
         //check cli mode
         self::checkSapiEnv();
 
-        //判断env变量
-        self::checkEnv($appPath);
+        //check env
+        self::checkEnv();
 
         //set define
         self::setGlobalDefine();
+    }
+
+    /**
+     * check app path
+     */
+    protected static function checkAppPath()
+    {
+        if (!is_dir(self::$appPath) || !is_readable(self::$appPath)) {
+            Output::stderr(['error' => "app path: " . self::$appPath . "is not a dir or readable."]);
+            exit();
+        }
     }
 
     /**
@@ -66,13 +88,12 @@ final class Main
 
     /**
      * 检查env变量
-     * @param string $appPath
      */
-    protected static function checkEnv($appPath)
+    protected static function checkEnv()
     {
         //load env
         try {
-            (new Dotenv($appPath))->load();
+            (new Dotenv(self::$appPath))->load();
         } catch (\Exception $e) {
             Output::stderr(['error' => $e->getMessage()]);
             exit();
@@ -82,8 +103,7 @@ final class Main
             Output::stdout(['warning' => 'APP_SECRET not defined.']);
         }
         if (getenv('APP_PATH') === false) {
-            Output::stderr(['error' => 'APP_PATH not defined.']);
-            exit();
+            Output::stdout(['debug' => 'APP_PATH not defined.']);
         }
     }
 
@@ -95,7 +115,7 @@ final class Main
         //is main init success
         define('MAIN_INIT', true);
         //app path
-        define('APP_PATH', getenv('APP_PATH'));
+        define('APP_PATH', env('APP_PATH', self::$appPath));
     }
 
     public static function getGroup()

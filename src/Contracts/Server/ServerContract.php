@@ -12,5 +12,5 @@ interface ServerContract
 
     public function setBeforeRunCallback(Closure $callback);
 
-    public function beforeRun();
+    public function setAfterRunCallback(Closure $callback);
 }
