@@ -76,6 +76,11 @@ final class Server implements BootstrapContract
         return $this->serverType;
     }
 
+    public function getApp()
+    {
+        return $this->app;
+    }
+
     /**
      * 初始化服务配置
      */
@@ -127,9 +132,22 @@ final class Server implements BootstrapContract
         }
     }
 
+    /**
+     * server manager init and run
+     */
     private function serverManagerRun()
     {
+        Output::stdout(['debug' => 'Server.serverManagerRun begin.']);
         $serverManager = (new ServerFactory())->make($this);
+        list($code, $message) = $serverManager->init();
+        if ($code) {
+            Output::stderr([
+                'error'   => 'Server.serverManager.init fail.',
+                'code'    => $code,
+                'message' => $message
+            ]);
+            exit();
+        }
         $serverManager->run();
     }
 

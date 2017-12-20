@@ -4,92 +4,81 @@ namespace Tenon\Server\Swoole;
 use Tenon\Support\Output;
 use Tenon\Application\App;
 use Tenon\Bootstrap\Server;
+use Tenon\Server\Manager as ServerManager;
 
 
-class Manager
+/**
+ * Class Manager
+ * @package Tenon\Server\Swoole
+ */
+final class Manager extends ServerManager
 {
     /**
-     * @var \Tenon\Contracts\Server\ServerContract
+     * @var Server
      */
-    private $_server;
+    private $server;
 
-    private $settings;
-
+    /**
+     * @var App;
+     */
     private $app;
 
+    /**
+     * Manager constructor.
+     * @param Server $server
+     */
     public function __construct(Server $server)
     {
-        $this->init();
+        $this->server = $server;
     }
 
-    public function setApp(App $app)
+    /**
+     * Init.
+     * @return array
+     */
+    public function init(): array
     {
-        $this->app = $app;
+        //init app
+        $this->app = $this->server->getApp();
+
+        // check settings
+        $this->checkServerSettings();
+
+        // check swoole extension exists
+        $this->checkVersion();
+
+        return [$this->code, $this->message];
     }
 
     /**
      * check must configs
      * @return array
      */
-    protected function checkSettings()
+    protected function checkServerSettings()
     {
-        $errors = [];
-        // swoole_config
-        if (!isset($this->settings['swoole_config']) || empty($this->settings['swoole_config'])) {
-            $errors[] = ['swoole_config' => 'miss'];
-        }
-        return $errors;
+//        $errors = [];
+//        // swoole_config
+//        if (!isset($this->settings['swoole_config']) || empty($this->settings['swoole_config'])) {
+//            $errors[] = ['swoole_config' => 'miss'];
+//        }
+//        return $errors;
     }
 
     protected function checkVersion()
     {
         if (!extension_loaded('swoole')) {
-            return false;
-        }
-        return true;
-    }
-
-    protected function init()
-    {
-        // check settings
-        $checkedErrors = $this->checkSettings();
-        if ($checkedErrors) {
-            Output::stderr($checkedErrors);
-            die();
-        }
-        // check swoole extension exists
-        if (!$this->checkVersion()) {
-            Output::stderr(['Server.beforeRun' => 'swoole extension not exist!']);
-            die();
-        }
-
-        // init server
-//        $this->_server = (new ServerFactory())->make($this->settings)->init();
-
-        return $this;
-    }
-
-    protected function daemonize()
-    {
-        $pid = pcntl_fork();
-        if ($pid < 0) {
-
-        } elseif ($pid == 0 ) {
-
-        } else {
-
+            $this->code = 1;
+            $this->message = 'swoole extension not exist';
         }
     }
 
+    /**
+     * Manager run.
+     */
     public function run()
     {
-        // 两次fork，daemon化monitor进程
-        // fork子进程-monitor进程，父进程退出，让子进程daemon化，子的monitor进程负责拉起
-        $this->daemonize();
-
         // swoole monitor进程还是需要调用TCP类的start来启动swoole进程的
         // swoole进程，监听进程信号
         // worker进程中刷新App容器对象
-        $this->_server->run();
     }
 }

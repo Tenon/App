@@ -1,7 +1,7 @@
 <?php
 namespace Tenon\Server;
 
-use Tenon\Contracts\Server\ServerContract;
+use Tenon\Contracts\Server\ServerManagerContract;
 use Tenon\Bootstrap\Server;
 
 
@@ -13,9 +13,9 @@ class ServerFactory
 {
     /**
      * @param Server $server
-     * @return ServerContract
+     * @return ServerManagerContract
      */
-    public function make(Server $server): ServerContract
+    public function make(Server $server): ServerManagerContract
     {
         $serverCore = __NAMESPACE__ . "\\" . ucfirst($server->getServerType()) . "\\Manager";
         return new $serverCore($server);
