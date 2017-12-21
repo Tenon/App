@@ -2,7 +2,6 @@
 namespace Tenon\Server;
 
 use Tenon\Contracts\Server\ServerManagerContract;
-use Tenon\Support\Constant;
 
 
 /**
@@ -13,16 +12,24 @@ abstract class Manager implements ServerManagerContract
 {
 
     /**
-     * error code
-     * @var integer
+     * 错误信息收集
+     * @var array
      */
-    protected $code = Constant::CODE_SERVER_INIT_OK;
+    private $errors = [];
 
     /**
-     * erroe message
-     * @var string
+     * 附加错误信息
+     * @param string $error
      */
-    protected $message = '';
+    protected function appendErrors(string $error)
+    {
+        $this->errors[] = $error;
+    }
 
-    abstract protected function checkServerSettings();
+    protected function getErrors()
+    {
+        return $this->errors;
+    }
+
+    abstract protected function check(): array;
 }

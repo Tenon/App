@@ -6,4 +6,9 @@
 return [
     //应用名
     'app_name' => 'tenon-app',
+
+    //log
+    'log' => [
+
+    ],
 ];

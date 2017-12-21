@@ -1,8 +1,6 @@
 <?php
 namespace Tenon\Service;
 
-use Tenon\Support\Output;
-
 
 /**
  * 内存常驻化辅助类
@@ -14,6 +12,11 @@ class Daemon
     protected static $processTitle;
 
     public static function hangup(string $processTitle)
+    {
+
+    }
+
+    private static function setTitle()
     {
 
     }

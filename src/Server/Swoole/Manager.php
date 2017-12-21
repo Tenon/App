@@ -1,7 +1,6 @@
 <?php
 namespace Tenon\Server\Swoole;
 
-use Tenon\Support\Output;
 use Tenon\Support\Constant;
 use Tenon\Application\App;
 use Tenon\Bootstrap\Server;
@@ -42,33 +41,30 @@ final class Manager extends ServerManager
         //init app
         $this->app = $this->server->getApp();
 
-        // check settings
-        $this->checkServerSettings();
-
-        // check swoole extension exists
-        $this->checkVersion();
-
-        return [$this->code, $this->message];
+        // check
+        return $this->check();
     }
 
     /**
-     * check server settings
-     * @return void
+     * check server settings and others.
+     * @return array
      */
-    protected function checkServerSettings()
+    protected function check(): array
     {
+        //check swoole extension
+        $this->checkExtension();
 
+        return $this->getErrors();
     }
 
     /**
      * 检查swoole扩展是否安装
-     * @return [type] [description]
+     * @return void
      */
-    protected function checkVersion()
+    protected function checkExtension()
     {
         if (!extension_loaded('swoole')) {
-            $this->code    = Constant::CODE_SERVER_INIT_WITHOUT_SWOOLE_EXT;
-            $this->message = Constant::MSG_SERVER_INIT_WITHOUT_SWOOLE_EXT;
+            $this->appendErrors(Constant::MSG_SERVER_INIT_WITHOUT_SWOOLE_EXT);
         }
     }
 

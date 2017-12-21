@@ -139,12 +139,11 @@ final class Server implements BootstrapContract
     {
         Output::stdout(['debug' => 'Server.serverManagerRun begin.']);
         $serverManager = (new ServerFactory())->make($this);
-        list($code, $message) = $serverManager->init();
-        if ($code) {
+        $initResult = $serverManager->init();
+        if ($initResult) {
             Output::stderr([
-                'error'   => 'Server.serverManager.init fail.',
-                'code'    => $code,
-                'message' => $message
+                'error'    => 'Server.serverManager.init fail.',
+                'messages' => $initResult
             ]);
             exit();
         }
