@@ -17,7 +17,7 @@ class ServerFactory
      */
     public function make(Server $server): ServerManagerContract
     {
-        $serverCore = __NAMESPACE__ . "\\" . ucfirst($server->getServerType()) . "\\Manager";
+        $serverCore = __NAMESPACE__ . "\\" . ucfirst($server->serverType) . "\\Manager";
         return new $serverCore($server);
     }
 }

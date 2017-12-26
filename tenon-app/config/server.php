@@ -6,11 +6,10 @@
 return [
     'ip' => '0.0.0.0',
     'port' => '20000',
-    'is_daemon' => false,  //is_daemon config or "-d" command params
     'server_type' => 'swoole',
     'server_config' => [
         'reactor_num' => 2,
-        'work_num' => 4,
+        'worker_num' => 4,
         'max_request' => 50000,
         'task_worker_num' => 2,
     ],

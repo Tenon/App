@@ -4,7 +4,6 @@ namespace Tenon\Service\Configure;
 use Tenon\Service\Component;
 use Tenon\Contracts\Service\ConfigureContract;
 use Tenon\Support\Output;
-use Tenon\Support\Arr;
 
 
 /**
@@ -74,7 +73,7 @@ abstract class Configure extends Component implements ConfigureContract
 
     public function get($key, $default = null)
     {
-        return Arr::get($this->config, $key, $default);
+        return array_get($this->config, $key, $default);
     }
 
     abstract protected function loadConfigFiles($filePath): array;

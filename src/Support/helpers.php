@@ -1,6 +1,8 @@
 <?php
 
 use Tenon\Application\App;
+use Tenon\Support\Arr;
+
 
 /**
  * App单例
@@ -26,9 +28,9 @@ if (!function_exists('env')) {
     }
 }
 
-if (!function_exists('runtime_path')) {
-    function runtime_path($path = '')
+if (!function_exists('array_get')) {
+    function array_get($array, $key, $default = null)
     {
-
+        return Arr::get($array, $key, $default);
     }
 }

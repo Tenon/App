@@ -51,11 +51,11 @@ final class Main
         Output::stdout(['debug' => 'Main.init begin.']);
         self::$appPath = $appPath;
 
-        //check app path
-        self::checkAppPath();
-
         //check cli mode
         self::checkSapiEnv();
+
+        //check app path
+        self::checkAppPath();
 
         //check env
         self::checkEnv();
@@ -126,5 +126,27 @@ final class Main
     public static function getEnv()
     {
         return env('ENV', 'dev');
+    }
+
+    /**
+     * 获取版本号
+     * @return string
+     */
+    public static function getLibVersion()
+    {
+        $version = 'unknown';
+        $path = APP_PATH . DIRECTORY_SEPARATOR . 'composer.lock';
+        if (!is_file($path) || !is_readable($path)) {
+            Output::stderr(['error' => "composer lock file: {$path} not readable."]);
+        } else {
+            $content = json_decode(file_get_contents($path), true);
+            $packages = $content['packages'] ?? [];
+            foreach ($packages as $package) {
+                if ($package['name'] == 'tenon/app') {
+                    $version = $package['version'];
+                }
+            }
+        }
+        return $version;
     }
 }

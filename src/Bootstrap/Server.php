@@ -9,20 +9,37 @@ use Tenon\Support\Output;
 
 final class Server implements BootstrapContract
 {
-    /**
-     * @var ContainerContract
-     */
-    private $app;
 
     /**
      * @var string
      */
-    private $ip = '0.0.0.0';
+    public $ip = '0.0.0.0';
 
     /**
      * @var integer
      */
-    private $port;
+    public $port;
+
+    /**
+     * @var array
+     */
+    public $serverSettings = [];
+
+    /**
+     * 是否开启daemon模式标识
+     * @var bool
+     */
+    public $daemon = false;
+
+    /**
+     * @var string
+     */
+    public $serverType = 'swoole';
+
+    /**
+     * @var ContainerContract
+     */
+    private $app;
 
     /**
      * 运行时目录
@@ -35,30 +52,10 @@ final class Server implements BootstrapContract
      */
     private $runtimePidPath = '';
 
-    /**
-     * @var string
-     */
-    private $serverType = 'swoole';
-
-    /**
-     * @var array
-     */
-    private $serverConfig = [];
-
-    /**
-     * 是否开启daemon模式标识
-     * @var bool
-     */
-    private $daemon = false;
 
     public function __construct(ContainerContract $app)
     {
         $this->app = $app;
-    }
-
-    public function isDaemon()
-    {
-        return $this->daemon;
     }
 
     public function run()
@@ -69,11 +66,6 @@ final class Server implements BootstrapContract
 
         //init server manager by factory
         $this->serverManagerRun();
-    }
-
-    public function getServerType()
-    {
-        return $this->serverType;
     }
 
     public function getApp()
@@ -104,10 +96,12 @@ final class Server implements BootstrapContract
         $this->serverType = ucfirst($config->get('server_type', $this->serverType));
 
         //set server process config
-        $this->serverConfig = $config->get('server_config', []);
+        $this->serverSettings = $config->get('server_config', []);
 
         //check runtime path
         $this->checkRuntimePath();
+
+        unset($config);
     }
 
     /**
