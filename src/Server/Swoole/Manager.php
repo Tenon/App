@@ -41,6 +41,16 @@ final class Manager extends ServerManager
     private $sock_type = SWOOLE_SOCK_TCP;
 
     /**
+     * @var int
+     */
+    private $MasterPid;
+
+    /**
+     * @var int
+     */
+    private $ManagerPid;
+
+    /**
      * @var array
      */
     private $serverSettings = [
@@ -130,6 +140,7 @@ final class Manager extends ServerManager
             'WorkerError' => $this->onWorkerError(),
             'Task'        => $this->onTask(),
             'Finish'      => $this->onFinish(),
+            'Close'       => $this->onClose(),
         ];
     }
 
@@ -176,7 +187,6 @@ final class Manager extends ServerManager
     protected function attachEventCallback()
     {
         try {
-//            var_dump($this->eventCallback);
             foreach ($this->eventCallback as $event => $callback)
             {
                 $this->server->on($event, $callback);
@@ -193,37 +203,44 @@ final class Manager extends ServerManager
 
     /**
      * onStart
-     * 记录master_id和manager_id
+     *  1.记录master_pid和manager_pid
+     * @return \Closure
      */
     protected function onStart()
     {
-        Output::stdout(['debug' => 'Server.onStart']);
         return function(\swoole_server $server) {
-
+            Output::stdout(['debug' => 'Server.onStart']);
+            //set pid
+            $this->MasterPid  = $server->master_pid;
+            $this->ManagerPid = $server->manager_pid;
+            //flush pid
+            $this->booter->flushPid('Master', $this->MasterPid);
+            $this->booter->flushPid('Manager', $this->ManagerPid);
         };
     }
 
+    /**
+     * onWorkerStart
+     * @return \Closure
+     */
     protected function onWorkerStart()
     {
-        Output::stdout(['debug' => 'Server.onWorkerStart']);
         return function(\swoole_server $server, int $worker_id) {
-
+            Output::stdout(['debug' => 'Server.onWorkerStart']);
         };
     }
 
     protected function onConnect()
     {
-        Output::stdout(['debug' => 'Server.onConnect']);
         return function(\swoole_server $server, int $fd, int $reactor_id) {
-
+            Output::stdout(['debug' => 'Server.onConnect']);
         };
     }
 
     protected function onReceive()
     {
-        Output::stdout(['debug' => 'Server.onReceive']);
         return function(\swoole_server $server, int $fd, int $reactor_id, string $data) {
-
+            Output::stdout(['debug' => 'Server.onReceive']);
         };
     }
 
@@ -245,8 +262,14 @@ final class Manager extends ServerManager
 
     protected function onFinish()
     {
-        Output::stdout(['debug' => 'Server.onFinish']);
         return function(\swoole_server $server, int $task_id, string $data) {
+            Output::stdout(['debug' => 'Server.onFinish']);
+        };
+    }
+
+    protected function onClose()
+    {
+        return function(\swoole_server $server, int $fd, int $reactor_id) {
 
         };
     }

@@ -76,7 +76,7 @@ final class Server implements BootstrapContract
     /**
      * 初始化服务配置
      */
-    private function initServerConfig()
+    protected function initServerConfig()
     {
         Output::stdout(['debug' => 'Server.initServerConfig begin.']);
         /**
@@ -107,7 +107,7 @@ final class Server implements BootstrapContract
     /**
      * 检查运行时目录的权限等
      */
-    private function checkRuntimePath()
+    protected function checkRuntimePath()
     {
         //runtime path
         $this->runtimePath = env('RUNTIME_PATH', sys_get_temp_dir() . DIRECTORY_SEPARATOR . APP_NAME . DIRECTORY_SEPARATOR . 'runtime');
@@ -129,7 +129,7 @@ final class Server implements BootstrapContract
     /**
      * server manager init and run
      */
-    private function serverManagerRun()
+    protected function serverManagerRun()
     {
         Output::stdout(['debug' => 'Server.serverManagerRun begin.']);
         $serverManager = (new ServerFactory())->make($this);
@@ -142,6 +142,15 @@ final class Server implements BootstrapContract
             exit();
         }
         $serverManager->run();
+    }
+
+    /**
+     * @param string $name
+     * @param int $pid
+     */
+    public function flushPid(string $name, int $pid)
+    {
+        @file_put_contents($this->runtimePidPath . DIRECTORY_SEPARATOR . $name, $pid);
     }
 
 }
