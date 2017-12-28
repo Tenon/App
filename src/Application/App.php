@@ -38,11 +38,6 @@ final class App extends Container
     private $defaultConfigType = 'php';
 
     /**
-     * @var string
-     */
-    private $basePath;
-
-    /**
      * 是否启动标识
      * @var bool
      */

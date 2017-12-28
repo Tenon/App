@@ -133,14 +133,15 @@ final class Manager extends ServerManager
     protected function initEventCallbacks()
     {
         $this->eventCallback = [
-            'Start'       => $this->onStart(),
-            'WorkerStart' => $this->onWorkerStart(),
-            'Connect'     => $this->onConnect(),
-            'Receive'     => $this->onReceive(),
-            'WorkerError' => $this->onWorkerError(),
-            'Task'        => $this->onTask(),
-            'Finish'      => $this->onFinish(),
-            'Close'       => $this->onClose(),
+            'Start'        => $this->onStart(),
+            'ManagerStart' => $this->onManagerStart(),
+            'WorkerStart'  => $this->onWorkerStart(),
+            'Connect'      => $this->onConnect(),
+            'Receive'      => $this->onReceive(),
+            'WorkerError'  => $this->onWorkerError(),
+            'Task'         => $this->onTask(),
+            'Finish'       => $this->onFinish(),
+            'Close'        => $this->onClose(),
         ];
     }
 
@@ -216,6 +217,16 @@ final class Manager extends ServerManager
             //flush pid
             $this->booter->flushPid('Master', $this->MasterPid);
             $this->booter->flushPid('Manager', $this->ManagerPid);
+            //set title
+            swoole_set_process_name('Tenon-Master');
+        };
+    }
+
+    protected function onManagerStart()
+    {
+        return function(\swoole_server $server) {
+            Output::stdout(['debug' => 'Server.onManagerStart']);
+            swoole_set_process_name('Tenon-Manager');
         };
     }
 
@@ -227,6 +238,19 @@ final class Manager extends ServerManager
     {
         return function(\swoole_server $server, int $worker_id) {
             Output::stdout(['debug' => 'Server.onWorkerStart']);
+            //set title
+            if ($server->taskworker) {
+                $processTitle = "Task";
+            } else {
+                $processTitle = "Worker";
+            }
+            swoole_set_process_name($processTitle);
+            //flush pid
+            $this->booter->flushPid($processTitle . "-" . $worker_id, posix_getpid());
+
+            //worker reload autoload
+            require dir_name(APP_PATH) . '/vendor/autoload.php'; //for development
+//            require APP_PATH . '/vendor/autoload.php';
         };
     }
 
